@@ -43,10 +43,13 @@ public func requestAccess(_ completion: @escaping (Result<Bool, Error>) -> Void)
 /// on sucess: returns array of contacts
 /// on error: error information, if an error occurred.
 ///
-public func fetchContacts(keysToFetch: [CNKeyDescriptor] = [CNContactVCardSerialization.descriptorForRequiredKeys()], order: CNContactSortOrder = .none, unifyResults: Bool = true, _ completion: @escaping (Result<[CNContact], Error>) -> Void) {
+public func fetchContacts(predicate: NSPredicate? = nil, keysToFetch: [CNKeyDescriptor] = [CNContactVCardSerialization.descriptorForRequiredKeys()], order: CNContactSortOrder = .none, unifyResults: Bool = true, _ completion: @escaping (Result<[CNContact], Error>) -> Void) {
     do {
         var contacts: [CNContact] = []
         let fetchRequest = CNContactFetchRequest(keysToFetch: keysToFetch)
+        if predicate != nil {
+            fetchRequest.predicate = predicate
+        }
         fetchRequest.unifyResults = unifyResults
         fetchRequest.sortOrder = order
         try ContactStore.default.enumerateContacts(with: fetchRequest) { contact, _ in

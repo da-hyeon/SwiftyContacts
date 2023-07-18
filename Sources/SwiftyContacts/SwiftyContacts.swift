@@ -50,11 +50,14 @@ public func authorizationStatus() -> CNAuthorizationStatus {
     /// - Throws: Error information, if an error occurred.
     /// - Returns: array of contacts
     @available(macOS 12.0.0, iOS 15.0.0, *)
-    public func fetchContacts(keysToFetch: [CNKeyDescriptor] = [CNContactVCardSerialization.descriptorForRequiredKeys()], order: CNContactSortOrder = .none, unifyResults: Bool = true) async throws -> [CNContact] {
+    public func fetchContacts(predicate: NSPredicate? = nil, keysToFetch: [CNKeyDescriptor] = [CNContactVCardSerialization.descriptorForRequiredKeys()], order: CNContactSortOrder = .none, unifyResults: Bool = true) async throws -> [CNContact] {
         return try await withCheckedThrowingContinuation { continuation in
             do {
                 var contacts: [CNContact] = []
                 let fetchRequest = CNContactFetchRequest(keysToFetch: keysToFetch)
+                if predicate != nil {
+                    fetchRequest.predicate = predicate
+                }
                 fetchRequest.unifyResults = unifyResults
                 fetchRequest.sortOrder = order
                 try ContactStore.default.enumerateContacts(with: fetchRequest) { contact, _ in
